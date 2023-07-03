@@ -3,17 +3,16 @@ FROM nvidia/cuda:11.7.1-runtime-ubuntu20.04
 
 ENV PATH="/root/miniconda3/bin:${PATH}"
 ARG PATH="/root/miniconda3/bin:${PATH}"
-RUN 
 
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && \
-    apt-get install -y wget fonts-dejavu-core rsync git libglib2.0-0 && \
-    apt-get clean
+  apt-get install -y wget fonts-dejavu-core rsync git libglib2.0-0 && \
+  apt-get clean
 
 RUN wget \
-    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && mkdir /root/.conda \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b \
-    && rm -f Miniconda3-latest-Linux-x86_64.sh
+  https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+  && mkdir /root/.conda \
+  && bash Miniconda3-latest-Linux-x86_64.sh -b \
+  && rm -f Miniconda3-latest-Linux-x86_64.sh
 
 RUN conda install python=3.8.5 && conda clean -a -y
 RUN conda install pytorch==1.11.0 torchvision==0.12.0 cudatoolkit=11.3 -c pytorch && conda clean -a -y
@@ -23,11 +22,9 @@ RUN cd stable-diffusion && git pull && git reset --hard c5b2c86f1479dec75b0e92dd
   conda env update --file environment.yaml --name base && conda clean -a -y
 
 # Textual-inversion:
-RUN <<EOF
-git clone https://github.com/hlky/sd-enable-textual-inversion.git &&
-cd /sd-enable-textual-inversion && git reset --hard 08f9b5046552d17cf7327b30a98410222741b070 &&
-rsync -a /sd-enable-textual-inversion/ /stable-diffusion/
-EOF
+RUN git clone https://github.com/hlky/sd-enable-textual-inversion.git && \
+  cd /sd-enable-textual-inversion && git reset --hard 08f9b5046552d17cf7327b30a98410222741b070 && \
+  rsync -a /sd-enable-textual-inversion/ /stable-diffusion/
 
 WORKDIR /stable-diffusion
 ENV TRANSFORMERS_CACHE=/cache/transformers TORCH_HOME=/cache/torch CLI_ARGS="" \
